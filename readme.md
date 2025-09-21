@@ -16,4 +16,8 @@ Menyimpan folder dan file utama dari aplikasi mvc
 
 3. index.php
 
+pengecekan url
+http://localhost/mvc/public/index.php?url=2121
+
+di http://localhost/mvc/public/
 

@@ -207,4 +207,165 @@ class Mahasiswa_model
 
 }
 
-2. 
+8. Database Wrapper
+1. Bikin folder baru di folder app
+    Bikin folder config 
+        Bikin file config.php yang berisi data-data dari database berupa constanta
+2. Lalu cut/pindahkan isi dari Constants.php yang ada di dalam core
+    3. Lalu di folder app init.php 
+        Lalukan penyesuaian
+        require_once 'config/config.php';
+ 4. Lalu ke config.php
+    //DB
+define('DB_HOST','localhost');
+define('DB_USER','root');
+define('DB_PASSWORD','');
+define('DB_NAME','php_mvc');
+
+5. Lalu membuat file baru di folder core, beri nama Database.php
+<?php
+
+class Database
+{
+    private $host = 'DB_HOST';
+    private $user = 'DB_USER';
+    private $password = 'DB_PASSWORD';
+    private $db_name = 'DB_NAME';
+    private $dbh;
+    private $stmt;
+
+    public function __construct()
+    {
+        // data source name = diisi dengan koneksi ke PDO
+        $dsn = 'mysql:host=' . $this->host . 'dbname=' . $this->db_name;
+
+        $option = [
+            PDO::ATTR_PERSISTENT => true,
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+        ];
+
+        try {
+            $this->dbh = new PDO($dsn, $this->user, $this->password, $option);
+        } catch (PDOExceptions $e) {
+            die('Error koneksi' . $e->getMessage());
+        }
+    }
+
+    public function query($query)
+    {
+        $this->stmt = $this->dbh->prepare($query);
+    }
+
+    // binding data
+    public function bind($parameter, $value, $type = null)
+    {
+        if (is_null($type)) {
+            switch (true) {
+                case is_int($value):
+                    $type = PDO::PARAM_INT;
+                    break;
+                case is_bool($value):
+                    $type = PDO::PARAM_BOOL;
+                    break;
+                case is_null($value):
+                    $type = PDO::PARAM_NULL;
+                    break;
+                default:
+                    $type = PDO::PARAM_STR;
+            }
+        }
+
+        $this->stmt->bindValue($parameter, $value, $type);
+    }
+
+    public function execute()
+    {
+        $this->stmt->execute();
+    }
+
+    public function resultSet(){
+        $this->execute();
+        return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function single(){
+        $this->execute();
+        return $this->stmt->fetch(PDO::FETCH_ASSOC);
+    }
+}
+
+6. buka file init.php
+
+7. Ke folder models di Mahasiswa_model.php
+<?php
+
+class Mahasiswa_model
+{
+    private $table = 'mahasiswa';
+    private $db;
+
+    public function __construct(){
+        $this->db = new Database;
+    }
+
+    public function getAllMahasiswa(){
+        $this->db->query('SELECT * FROM ' . $this->table);
+        return $this->db->resultSet();
+    }
+
+}
+
+8. ke folder views/mahasiswa dan file index.php
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <h3 class="mt-5">Daftar Mahasiswa</h3>
+            <ul class="list-group">
+                <?php foreach ($data['mhs'] as $mhs): ?>
+                    <li class="list-group-item d-flex justify-content-between align-items-center" >
+                        <?php echo $mhs['nama'] ?>
+                        <a href="<?php echo BASEURL; ?>/mahasiswa/detail/<?php echo $mhs['id']; ?>" class="badge text-bg-primary">detail</a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    </div>
+</div>
+
+9. Ke controlles ke Mahasiswa.php untuk buat method baru
+    public function detail($id)
+    {
+
+        $data['judul'] = 'Detail Mahasiswa';
+        $data['mhs'] = $this->model('Mahasiswa_model')->getMahasiswaById($id);
+        $this->view('templates/header', $data);
+        $this->view('mahasiswa/index', $data);
+        $this->view('templates/footer');
+    }
+
+10. Lalu ke models ke Mahasiswa_model.php
+    public function getMahasiswaById($id){
+        $this->db->query('SELECT * FROM '. $this->table . ' WHERE id=:id');
+        $this->db->bind('id', $id);
+        return $this->db->single();
+    }
+
+11. Ke folder controllers Mahasiswa.php   
+     $this->view('mahasiswa/detail', $data);
+
+12. Lalu di folder views ke mahasiswa buat file baru detail.php
+<div class="container mt-5">
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title"><?php echo $data['mhs']['nama'] ?></h5>
+                <h6 class="card-subtitle mb-2 text-body-secondary"><?php echo $data['mhs']['nim'] ?></h6>
+                    <p class="card-text"><?php echo $data['mhs']['email'] ?></p>
+                    <p class="card-text"><?php echo $data['mhs']['jurusan'] ?></p>
+    <a href="<?php echo BASEURL; ?>/mahasiswa" class="card-link">Kembali</a>
+  </div>
+</div>
+
+</div>
+    
+ 
+

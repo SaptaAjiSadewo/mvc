@@ -452,10 +452,80 @@ class Mahasiswa_model
 
  3. Ke folder models lalu file Mahasiswa_model.php
 
+    public function tambahDataMahasiswa($data){
+        $query = "INSERT INTO mahasiswa VALUES ('', :nama, :nim, :email, :jurusan)";
+
+        $this->db->query($query);   
+        $this->db->bind('nama', $data['nama']);
+        $this->db->bind('nim', $data['nim']);
+        $this->db->bind('email', $data['email']);
+        $this->db->bind('jurusan', $data['jurusan']);
+        
+        $this->db->execute();
+
+        return $this->db->rowCount();
+    }
+
  4. ke folder core cara Database.php
      public function rowCount(){
         return $this->stmt->rowCount();
     }
 
-5. 
+# 10 Flash message
+1. Di dalam folder core menambahkan class Flaser.php
+<?php
+
+class Flasher
+{
+    public static function setFlash($pesan, $aksi, $tipe)
+    {
+        $_SESSION['flash'] = [
+            'pesan' => $pesan,
+            'aksi' => $aksi,
+            'tipe' => $tipe
+        ];
+    }
+
+    public static function Flash()
+    {
+        if (isset($_SESSION['flash'])) {
+            echo '<div class="alert alert-' . $_SESSION['flash']['tipe'] . ' alert-dismissible fade show" role="alert">
+  Data Mahasiswa <strong>' . $_SESSION['flash']['pesan'] . '</strong> ' . $_SESSION['flash']['aksi'] . '
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>';
+            unset($_SESSION['flash']);
+        }
+    }
+}
+
+2. Panggil di file init.php di folder app
+require_once 'core/Flasher.php';
+
+3. Ke file index.php paling luar
+<?php
+if (!session_id()) {
+    session_start();
+}
+
+4. ke halaman index.php di folder mahasiswa
+    <div class="row">
+        <div class="col-6">
+            <?php echo Flasher::Flash() ?>
+        </div>
+    </div>
+
+5. ke controllers ke Mahasiswa.php
+    public function tambah()
+    {
+
+        #var_dump($_POST);  
+        if ($this->model('Mahasiswa_model')->tambahDataMahasiswa($_POST) > 0) {
+            Flasher::setFlash('berhasil', 'ditambahkan', 'success');
+            header('Location: ' . BASEURL . '/mahasiswa');
+            exit;
+        } else {
+            Flasher::setFlash('gagal', 'ditambahkan', 'danger');
+            header('Location: ' . BASEURL . '/mahasiswa');
+            exit;
+        }    
 

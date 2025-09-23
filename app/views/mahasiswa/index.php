@@ -9,16 +9,23 @@
     <div class="row">
         <div class="col-6">
             <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#formModal">
+            <button type="button" class="btn btn-primary mt-3 tombolTambahData" data-bs-toggle="modal"
+                data-bs-target="#formModal">
                 Tambah Data Mahasiswa
             </button>
             <h3 class="mt-3">Daftar Mahasiswa</h3>
             <ul class="list-group">
                 <?php foreach ($data['mhs'] as $mhs): ?>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <li class="list-group-item ">
                         <?php echo $mhs['nama'] ?>
+                        <a href="<?php echo BASEURL; ?>/mahasiswa/hapus/<?php echo $mhs['id']; ?>"
+                            class="badge text-bg-danger float-end ms-2" onclick="return confirm('yakin?');">hapus</a>
+
+                        <a href="<?php echo BASEURL; ?>/mahasiswa/ubah/<?php echo $mhs['id']; ?>"
+                            class="badge text-bg-warning float-end ms-2">ubah</a>
+
                         <a href="<?php echo BASEURL; ?>/mahasiswa/detail/<?php echo $mhs['id']; ?>"
-                            class="badge text-bg-primary">detail</a>
+                            class="badge text-bg-primary float-end ">detail</a>
                     </li>
                 <?php endforeach; ?>
             </ul>
@@ -27,11 +34,11 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="formModal" tabindex="-1" aria-labelledby="judulModal" aria-hidden="true">
+<div class="modal fade" id="formModal" tabindex="-1" aria-labelledby="formModal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="judulModal">Tambah Data Mahasiswa</h1>
+                <h1 class="modal-title fs-5" id="formModalLabel">Tambah Data Mahasiswa</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
@@ -67,8 +74,8 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="submit" class="btn btn-primary">Tambah Data</button>
-                </form>
             </div>
+            </form>
         </div>
     </div>
 </div>

@@ -527,5 +527,65 @@ if (!session_id()) {
             Flasher::setFlash('gagal', 'ditambahkan', 'danger');
             header('Location: ' . BASEURL . '/mahasiswa');
             exit;
-        }    
+        }
+
+# 11. Fitur Delete
+
+1. Ke folder Views file index.php
+                        <a href="<?php echo BASEURL; ?>/mahasiswa/hapus/<?php echo $mhs['id']; ?>"
+                            class="badge text-bg-danger float-end ms-3" onclick="return confirm('yakin?');">hapus</a>
+
+                        <a href="<?php echo BASEURL; ?>/mahasiswa/detail/<?php echo $mhs['id']; ?>"
+                            class="badge text-bg-primary float-end ">detail</a>
+
+2. Folder controllers, cari Mahasiswa.php
+    public function hapus($id)
+    {
+
+        #var_dump($_POST);  
+        if ($this->model('Mahasiswa_model')->hapusDataMahasiswa($id) > 0) {
+            Flasher::setFlash('berhasil', 'dihapus', 'success');
+            header('Location: ' . BASEURL . '/mahasiswa');
+            exit;
+        } else {
+            Flasher::setFlash('gagal', 'dihapus', 'danger');
+            header('Location: ' . BASEURL . '/mahasiswa');
+            exit;
+        }
+    }
+
+3. folder models cari file Mahasiswa_model.php    
+    public function hapusDataMahasiswa($id){
+        $query = "DELETE FROM mahasiswa WHERE id = :id";
+
+        $this->db->query($query);   
+        $this->db->bind('id', $id);
+        
+        $this->db->execute();
+
+        return $this->db->rowCount();
+    }
+
+
+# 12 Fitur Update Data
+1. Ke folder Views file index.php
+                            <a href="<?php echo BASEURL; ?>/mahasiswa/ubah/<?php echo $mhs['id']; ?>"
+                            class="badge text-bg-warning float-end ms-2" data-bs-toggle="modal" data-bs-target="#formModal">ubah</a>
+
+2. Buat file js di folder public
+script.js
+
+3. buka folder views/templates cari footer.php
+<script src="<?php echo BASEURL; ?>/js/script.js"></script>
+
+4. folder js di file script.js
+$(function(){
+    $('.tampilModalUbah').on('click', function(){
+        console.log('Berhasil loh ya 2');
+        
+    });
+});
+
+5. Cek file index.php
+
 

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Halaman <?php echo $data['judul']; ?></title>
     <link rel="stylesheet" href="<?php echo BASEURL; ?>/css/bootstrap.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
 
